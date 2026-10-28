@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "container.h"
 
+//Input the datails of containers
 void registerContainer(struct Container containers[], int *count){
 
     if(*count >= 10){
@@ -38,7 +39,7 @@ void registerContainer(struct Container containers[], int *count){
     printf("\nContainer registered successfully!\n");
 }
 
-
+//displaying all the containers registered
 void displayContainer(struct Container containers[], int count){
 
     printf("\n--- EXISTING CONTAINERS ---\n");
@@ -65,6 +66,7 @@ void displayContainer(struct Container containers[], int count){
     }
 }
 
+//Sorting containers by the priority as a order of highest to lowest
 void sortContainers_priority(struct Container containers[], int count){
     int i, j;
     struct Container temp;

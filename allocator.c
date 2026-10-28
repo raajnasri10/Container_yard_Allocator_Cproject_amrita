@@ -1,8 +1,10 @@
 #include <stdio.h>
-#include "allocator.h"
 #include <string.h>
+#include "allocator.h"
 
+//Initializing 16 slots 
 void initializeSlots(struct Slot slots[]){
+//TYPE - General; SIZE - 20
     strcpy(slots[0].slotID, "A1");
     slots[0].size = 20;
     strcpy(slots[0].type, "General");
@@ -30,7 +32,7 @@ void initializeSlots(struct Slot slots[]){
     slots[3].hazardous = 1;
     slots[3].occupied = 0;
     strcpy(slots[3].containerID, "");
-
+//TYPE - General; Size - 40
     strcpy(slots[4].slotID, "B1");
     slots[4].size = 40;
     strcpy(slots[4].type, "General");
@@ -58,7 +60,7 @@ void initializeSlots(struct Slot slots[]){
     slots[7].hazardous = 1;
     slots[7].occupied = 0;
     strcpy(slots[7].containerID, "");
-
+//TYPE - Reefer; Size - 20
     strcpy(slots[8].slotID, "C1");
     slots[8].size = 20;
     strcpy(slots[8].type, "Reefer");
@@ -67,44 +69,44 @@ void initializeSlots(struct Slot slots[]){
     strcpy(slots[8].containerID, "");
 
     strcpy(slots[9].slotID, "C2");
-    slots[9].size = 40;
+    slots[9].size = 20;
     strcpy(slots[9].type, "Reefer");
-    slots[9].hazardous = 0;
+    slots[9].hazardous = 1;
     slots[9].occupied = 0;
     strcpy(slots[9].containerID, "");
-
+//TYPE - Reefer; Size - 40
     strcpy(slots[10].slotID, "C3");
-    slots[10].size = 20;
-    strcpy(slots[10].type, "OpenTop");
+    slots[10].size = 40;
+    strcpy(slots[10].type, "Reefer");
     slots[10].hazardous = 0;
     slots[10].occupied = 0;
     strcpy(slots[10].containerID, "");
 
     strcpy(slots[11].slotID, "C4");
     slots[11].size = 40;
-    strcpy(slots[11].type, "OpenTop");
-    slots[11].hazardous = 0;
+    strcpy(slots[11].type, "Reefer");
+    slots[11].hazardous = 1;
     slots[11].occupied = 0;
     strcpy(slots[11].containerID, "");
-
+//TYPE - OpenTop ; Size - 20
     strcpy(slots[12].slotID, "D1");
     slots[12].size = 20;
-    strcpy(slots[12].type, "Reefer");
-    slots[12].hazardous = 1;
+    strcpy(slots[12].type, "OpenTop");
+    slots[12].hazardous = 0;
     slots[12].occupied = 0;
     strcpy(slots[12].containerID, "");
 
     strcpy(slots[13].slotID, "D2");
-    slots[13].size = 40;
-    strcpy(slots[13].type, "Reefer");
+    slots[13].size = 20;
+    strcpy(slots[13].type, "OpenTop");
     slots[13].hazardous = 1;
     slots[13].occupied = 0;
     strcpy(slots[13].containerID, "");
-
+//TYPE - OpenTop; Size - 40
     strcpy(slots[14].slotID, "D3");
-    slots[14].size = 20;
+    slots[14].size = 40;
     strcpy(slots[14].type, "OpenTop");
-    slots[14].hazardous = 1;
+    slots[14].hazardous = 0;
     slots[14].occupied = 0;
     strcpy(slots[14].containerID, "");
 
@@ -116,12 +118,19 @@ void initializeSlots(struct Slot slots[]){
     strcpy(slots[15].containerID, "");
 }
 
-int allocateContainer(struct Slot slots[], struct Container container){
-    for(int i = 0; i < 16 ; i++){
-        if(slots[i].occupied == 0){
-            if(slots[i].size == container.size){
-                if(strcmp(slots[i].type, container.type) == 0){
-                    if(slots[i].hazardous == container.hazardous){
+//Allocating container based on type, size and hazardous status
+int allocateContainer(struct Slot slots[], struct Container container) {
+    for(int i = 0; i < 16; i++){
+        if(slots[i].occupied == 1 && strcmp(slots[i].containerID, container.id) == 0){
+            printf("ERROR: Container %s is aloready allocated to the slot %s.\n", container.id, slots[i].slotID);
+            return -2;
+        }
+    }
+    for (int i = 0; i < 16; i++) {
+        if (slots[i].occupied == 0) {
+            if (slots[i].size == container.size) {
+                if (strcmp(slots[i].type, container.type) == 0) {
+                    if (slots[i].hazardous == container.hazardous) {
                         slots[i].occupied = 1;
                         strcpy(slots[i].containerID, container.id);
                         return i;
@@ -129,6 +138,49 @@ int allocateContainer(struct Slot slots[], struct Container container){
                 }
             }
         }
-        return -1;
     }
+    return -1;
+}
+
+//Viewing all the slots
+void displaySlots(struct Slot slots[]) {
+    printf("\n--- YARD SLOT STATUS ---\n");
+
+    for (int i = 0; i < 16; i++) {
+        printf("\nSlot ID: %s", slots[i].slotID);
+        printf("\nSize: %d", slots[i].size);
+        printf("\nType: %s", slots[i].type);
+        printf("\nHazardous: %s",
+               slots[i].hazardous ? "Yes" : "No");
+        printf("\nStatus: %s",
+               slots[i].occupied ? "Occupied" : "Available");
+
+        if (slots[i].occupied) {
+            printf("\nContainer ID: %s", slots[i].containerID);
+        }
+
+        printf("\n----------------------\n");
+    }
+}
+
+//Displaying summary of the yard with percentage of yard occupied
+void displayYardSummary(struct Slot slots[]){
+    int totalSlots = 16;
+    int occupiedSlots = 0;
+
+    for(int i = 0; i < totalSlots; i++){
+        if(slots[i].occupied == 1){
+            occupiedSlots++;
+        }
+    }
+
+    int availableSlots = totalSlots - occupiedSlots;
+    float utilization = (float)occupiedSlots / totalSlots * 100;
+
+    printf("\n======YARD SUMMARY========\n");
+    printf("Total Slots  : %d\n", totalSlots);
+    printf("Occupied Slots   : %d\n", occupiedSlots);
+    printf("Available slots   : %d\n", availableSlots);
+    printf("Yard Utilization : %.2f%%\n", utilization);
+    printf("========================================\n");
 }

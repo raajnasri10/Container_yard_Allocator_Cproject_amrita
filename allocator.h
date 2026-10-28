@@ -1,6 +1,9 @@
+#ifndef ALLOCATOR_H
+#define ALLOCATOR_H
+
 #include "container.h"
 
-struct Slot{
+struct Slot {
     char slotID[5];
     int size;
     char type[20];
@@ -10,5 +13,8 @@ struct Slot{
 };
 
 void initializeSlots(struct Slot slots[]);
+int allocateContainer(struct Slot slots[], struct Container container);
+void displaySlots(struct Slot slots[]);
+void displayYardSummary(struct Slot slots[]);
 
-int allocateContainer(struct Slot Slots[], struct Container containers);
+#endif
